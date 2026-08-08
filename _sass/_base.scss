@@ -641,8 +641,37 @@ footer.sticky-bottom {
 }
 
 // Rouge Color Customization
-figure.highlight {
+figure.highlight,
+.highlight {
   margin: 0 0 1rem;
+
+  .rouge-table {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-collapse: collapse;
+
+    tbody, tr, td {
+      border: 0;
+      padding: 0;
+      vertical-align: top;
+    }
+
+    td.gutter,
+    td.rouge-gutter {
+      padding-right: 1rem;
+      user-select: none;
+    }
+
+    pre {
+      margin: 0;
+    }
+
+    .lineno {
+      color: var(--global-text-color-light);
+      text-align: right;
+    }
+  }
 }
 
 pre {
