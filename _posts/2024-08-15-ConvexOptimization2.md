@@ -3,7 +3,7 @@ layout: distill
 title: "[Theoretical Background] Convex Optimization 2"
 date: 2024-08-15 00:00:00 +0000
 description: >
-  I’m back with the second post related to optimization. Last time, we examined how it expands and converges when the function is L-lipschitz. This time, let's examine what happens when stronger constraints / assumptions are applied. Then, without further ado, let's jump right in.
+  I’m back with the second post related to Optimization. Last time, we examined how Gradient Descent converges when the function is $L$-Lipschitz. This time, let's examine what happens when stronger constraints or assumptions are applied. Without further ado, let's jump right in.
 authors:
   - name: Jae-Jun Lee
     affiliations:
@@ -16,24 +16,24 @@ mathjax: true
 _meta: >
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="[Theoretical Background] Convex Optimization 2">
-  <meta name="twitter:description" content="I’m back with the second post related to optimization. Last time, we examined how it expands and converges when the function is L-lipschitz. This time, let's examine what happens when stronger constraints / assumptions are applied. Then, without further ado, let's jump right in.">
+  <meta name="twitter:description" content="I’m back with the second post related to Optimization. Last time, we examined how Gradient Descent converges when the function is L-Lipschitz. This time, let's examine what happens when stronger constraints or assumptions are applied. Without further ado, let's jump right in.">
 ---
 
 ### $\star$ Recap [(Previous Post)](https://johnjaejunlee95.github.io/kr/Optimization_1/)
 
-In the previous post, assuming a function is <mark style="background: orange">convex</mark> + $L$-lipschitz, the following Theorem was derived:
+In the previous post, assuming that a function is <mark style="background: orange">convex</mark> and $L$-Lipschitz, we derived the following Theorem:
 
 <mark style="background:skyblue" >Theorem</mark> Let $f$ be convex and $L$-Lipschitz continuous. Then gradient descent with $\gamma = \frac{\mid\mid x\_1 - x^\star\mid\mid}{L\sqrt{T}}$  satisfies:
 
 $$f \left ( \frac{1}{T} \sum_{k=1}^T x_k  \right) - f(x^{\star}) \leq \frac{\mid\mid x_1 - x^\star \mid\mid L}{\sqrt{T}} \Rightarrow \mathcal{O}(\frac{1}{\sqrt{T}})$$
 
-Then, what statement would emerge if we apply a stronger constraint or assumption than $L$-Lipschitz? Intuitively, it will probably converge at a much faster speed. Then let's verify through proof if it actually converges at a faster speed. (All examples are Gradient Descent.)
+So, what happens if we apply a stronger constraint or assumption than $L$-Lipschitz? Intuitively, we would expect the method to converge much faster. Let's verify through the proof whether it actually converges at a faster rate. (All examples use Gradient Descent.)
 
 
 
 ### Before we begin...
 
-When dealing with optimization problems, assumptions/constraints can be applied in various ways. (From now on, I will express all situations where assumptions/limits are set as ***assumption***.) The stronger the assumption, the fewer functions satisfy it, but the convergence speed becomes faster. Therefore, by appropriately placing these constraints, we can verify "why it works well" from a Learning Theory perspective. The first assumption we looked at was $L$-Lipschitz, and this time we will look at how gradient descent converges under the $\beta$-Smoothness condition.
+When dealing with optimization problems, assumptions and constraints can be applied in various ways. (From now on, I will refer to all situations where assumptions or limits are imposed as an ***assumption***.) The stronger the assumption, the fewer functions satisfy it, but the convergence becomes faster. Therefore, by imposing appropriate constraints, we can understand "why it works well" from a Learning Theory perspective. The first assumption we examined was $L$-Lipschitz continuity, and this time we will look at how Gradient Descent converges under the $\beta$-Smoothness condition.
 
 ## Problem Formulation 2 <br> (Assumption: $\beta$ -Smooth)
 
@@ -47,11 +47,11 @@ $$
 $$
 
 
-In other words, if an arbitrary function $f$ is in a differentiable form, it means it is $\beta$-Lipschitz with respect to the differentiated function. If you think about why this is a stronger assumption, you can think of the concept of differentiation we learned in high school.
+In other words, if an arbitrary function $f$ is differentiable, then its gradient is $\beta$-Lipschitz. If you want to understand why this is a stronger assumption, you can think about the concept of differentiation that we learned in high school.
 
-In the case of $L$-Lipschitz, it means that the rate of change for an arbitrary function $f$ is limited in proportion to $L$. However, $\beta$-Smooth means that the rate of change of the derivative value of an arbitrary function $f$ is limited in proportion to $\beta$. That is, $L$-Lipschitz means function $f$'s rate of change $\rightarrow$ derivative value is proportional to $L$, and $\beta$-Smoothness means function $f$'s derivative value's rate of change $\rightarrow$ second derivative value is proportional to $\beta$. In this case, all $\beta$-Smooth belong to $L$-Lipschitz, but since not all $L$-Lipschitz belong to $\beta$-Smooth, **$\beta$-Smooth can be seen as a stronger assumption.**
+In the $L$-Lipschitz case, the rate of change of an arbitrary function $f$ is limited in proportion to $L$. However, $\beta$-Smoothness limits the rate of change of the derivative of $f$ in proportion to $\beta$. In other words, $L$-Lipschitz continuity limits the rate of change of the function itself, while $\beta$-Smoothness limits the rate of change of its derivative, or roughly its second derivative. In this sense, all $\beta$-Smooth functions belong to the $L$-Lipschitz class, but not all $L$-Lipschitz functions are $\beta$-Smooth. Therefore, **$\beta$-Smoothness can be seen as a stronger assumption.**
 
-Returning to the main point, let's check how gradient descent converges when an arbitrary function $f$ is $\beta$-smooth.
+Returning to the main point, let's check how Gradient Descent converges when an arbitrary function $f$ is $\beta$-Smooth.
 
 <mark style="background:skyblue" >Theorem 2:</mark> Let $f$ be convex and $\beta$-smooth on $\mathbb{R}^n$ \. Then, gradient descent with $\gamma = \frac{1}{\beta}$ satisfies
 
@@ -61,11 +61,11 @@ f(x_T) - f(x^\star) \leq \frac{2\beta || x_1 - x^\star || ^2}{T-1}
 $$
 
 
-The expansion method is similar to when it was $L$-Lipschitz. However, since a stronger assumption is included, we just need to look at a few more things.
+The derivation is similar to the $L$-Lipschitz case. However, since we have a stronger assumption, we need to examine a few additional points.
 
 ### Proof:
 
-Before we begin, there is one more definition we can define due to the property of $\beta$-smooth:
+Before we begin, there is one more definition that follows from the $\beta$-Smoothness property:
 
 
 $$
@@ -73,9 +73,9 @@ f(y)  \leq f(x) + \left< \nabla f(x) , y-x\right> + \frac{\beta}{2} || y - x ||^
 $$
 
 
-Since there is already an assumption that function $f$ is twice-differentiable, this formula can be expanded using the concept of Taylor Expansion. (Since this is not the main point but utilized as a definition, I will leave the proof as a [link](https://angms.science/doc/CVX/CVX_betasmoothsandwich.pdf).)
+Since we are assuming that the function $f$ is twice differentiable, this formula can be derived using a Taylor expansion. (Since this is not the main point and is used here as a definition, I will leave the proof as a [link](https://angms.science/doc/CVX/CVX_betasmoothsandwich.pdf).)
 
-Then now, let's proceed with the proof for the convergence of gradient descent when it is really $\beta$-Smoothness. The direction of expansion itself is similar to when it is $L$-Lipschitz. However, you can see that the definitions available to use have increased. First, the gradient descent equation based on the property of $\beta$-Smooth can be expanded as follows.
+Now, let's proceed with the proof of Gradient Descent convergence under $\beta$-Smoothness. The overall derivation is similar to the $L$-Lipschitz case. However, we now have additional properties available to use. First, using the $\beta$-Smoothness property, the Gradient Descent equation can be expanded as follows.
 
 
 $$
@@ -91,9 +91,9 @@ $$
 
 
 
-Also, like the proof when it was $L$-Lipschitz, the bound of $f(x_t) - f(x^\star)$ can be expanded as follows using the convexity of $f$: $f(x_t) - f(x^\star) \leq \left< \nabla f(x_t) , x_t - x^\star \right>$
+As in the $L$-Lipschitz proof, convexity of $f$ gives us the following bound: $f(x_t) - f(x^\star) \leq \left< \nabla f(x_t) , x_t - x^\star \right>$
 
-The term we can utilize here is $\nabla f(x_t)$ when thinking of the proof above. In other words, since the bound related to $\mid\mid \nabla f(x_{t})\mid\mid^2$, which is the squared form of $\nabla f(x_t)$, is already available, utilizing this allows us to expand the equation a bit more smoothly. This can be done by utilizing the **Cauchy-Schwarz Inequality** property.
+The useful term here is $\nabla f(x_t)$. Since the previous derivation already gives us a bound involving $\mid\mid \nabla f(x_{t})\mid\mid^2$, the squared norm of $\nabla f(x_t)$, we can use it to expand the proof more smoothly. This can be done using the **Cauchy-Schwarz Inequality**.
 
  ($\star$ **Cauchy-Schwarz Inequality**: $\left< a,b \right> \leq \mid\mid a \mid\mid \cdot \mid\mid b \mid\mid $)
 
@@ -107,9 +107,9 @@ $$
 $$
 
 
-Now, for the next step, we need to re-arrange it into a form that is easy for us to handle, and the easiest way is ultimately to handle the bound for $f(x_{t+1}) - f(x_t)$. By subtracting $f(x^\star)$ from both inequality terms as follows, we can utilize all the methods expanded previously.
+For the next step, we need to rearrange the result into a more manageable form. The easiest way is to work with the bound for $f(x_{t+1}) - f(x_t)$. By subtracting $f(x^\star)$ from both sides of the inequality, we can use the results derived above.
 
-However, before that, there is one part to check. Before looking at $f$, we need to check how the bound is formed according to step $t$. Therefore, before looking at $f(x_{t+1}) - f(x_t)$, let's check how the bound between $x_t$ and $x_{t+1}$ is formed.
+However, before doing that, there is one more point to check. Before examining $f$, we need to understand how the bound changes with step $t$. Therefore, before looking at $f(x_{t+1}) - f(x_t)$, let's first examine the relationship between $x_t$ and $x_{t+1}$.
 
 
 $$
@@ -121,7 +121,7 @@ $$
 \end{align}
 $$
 
-Utilizing this property, we can continue the proof using $f(x^\star)$ as follows.
+Using this property, we can continue the proof in terms of $f(x^\star)$ as follows.
 
 
 $$
@@ -136,7 +136,7 @@ $$
 
 
 
-If we divide the inequalities above by $D_t D_{T+1}$
+If we divide the inequality above by $D_t D_{T+1}$,
 
 
 $$
@@ -146,12 +146,12 @@ $$
 $$
 
 
-It becomes. However, here we can reset the bound through 2 conditions.
+we obtain the following. However, we can tighten the bound using two conditions:
 
-1. Since ${D_t}/{D_{t+1}}  = \left[f(x_t) - f(x^\star)\right] / \left[f(x_{t+1}) - f(x^\star)\right]$  and $f(x_{t+1})$ is smaller than $f(x_t)$, we know that ${D_t}/{D_{t+1}} \geq 1$.
+1. Since ${D_t}/{D_{t+1}}  = \left[f(x_t) - f(x^\star)\right] / \left[f(x_{t+1}) - f(x^\star)\right]$ and $f(x_{t+1})$ is smaller than $f(x_t)$, we know that ${D_t}/{D_{t+1}} \geq 1$.
 2. Since ${x_t - x^\star} \leq x_1 - x^\star $, we know that $1 /{\mid\mid x_t - x^\star \mid\mid^2} \geq 1 / {\mid\mid x_1 - x^\star \mid\mid^2}$.
 
-And since the Right Hand Side (RHS) term is a negative form, if we hold the bound tighter, it can be expressed as follows.
+Since the Right-Hand Side (RHS) term is negative, tightening the bound gives us the following:
 
 
 $$
@@ -159,7 +159,7 @@ $$
 $$
 
 
-Just like the previous expansion, if we substitute $t=1, \ldots , {T-1}$ sequentially
+Just as in the previous derivation, if we substitute $t=1, \ldots , {T-1}$ sequentially,
 
 
 $$
@@ -172,7 +172,7 @@ $$
 $$
 
 
-And if we proceed with summation for the inequalities above
+Summing the inequalities above gives:
 
 
 
@@ -185,7 +185,7 @@ $$
 $$
 
 
-Here, utilizing the property of $\beta$-Smooth and properties of convexity, we can set $D_1$ as follows.
+Here, using the $\beta$-Smoothness property and convexity, we can bound $D_1$ as follows.
 
 
 
@@ -197,11 +197,11 @@ $$
 \end{align}
 $$
 
-The reason this is possible is that ultimately, since $x^\star$ is a minimizer value, we can assume the derivative value for $f$ converges to 0. Therefore, since $\nabla f(x^\star) = 0$, we can derive the equation above.
+This is possible because $x^\star$ is a minimizer, so we can assume that the derivative of $f$ is zero at that point. Therefore, since $\nabla f(x^\star) = 0$, we can derive the equation above.
 
 
 
-And if we organize the formula
+Rearranging the formula gives:
 
 
 $$
@@ -215,9 +215,9 @@ $$
 $$
 
 
-The reason for changing the numerator from $T-3 \Rightarrow T-1$ above is that since we checked from step $1$ to $T-1$ when we did the summation, matching the form makes it easier to set the bound.
+The reason for changing the numerator from $T-3 \Rightarrow T-1$ above is that we summed from step $1$ to $T-1$. Matching the form makes it easier to set the bound.
 
-Now, for the final step, if we take the reciprocal for each term, it's done. **(inequality direction changes)**
+Now, for the final step, we take the reciprocal of each term. The proof is complete. **(The inequality direction changes.)**
 
 
 $$
@@ -229,9 +229,9 @@ $$
 
 ## Afterwards...
 
-In expanding the formulas, I tried to explain as best as I could, but as the conditions to satisfy increased, the explanation seems to have become a bit verbose. Because of that, you might feel that readability and flow are not smooth. I will try to polish it little by little whenever I have time.
+While expanding the formulas, I tried to explain each step as clearly as possible. However, as the number of conditions increased, the explanation became a bit verbose. Because of that, the readability and flow may not feel completely smooth. I will continue polishing it whenever I have time.
 
-I will stop the proofs related to Convex here. (Most are proved similarly.) I will return with different content in the next post.
+I will stop the proofs related to Convex Optimization here. (Most of them can be proved in a similar way.) I will return with different content in the next post.
 
 
-**$\*\$Thank you very much for reading. If there are any incorrect parts while reading or if you have any advice, I would appreciate it if you could share your opinions anytime.**
+**$\*\$Thank you very much for reading. If you find any incorrect parts or have any advice, I would appreciate it if you shared your thoughts anytime.**

@@ -14,25 +14,25 @@ mathjax: true
 _meta: >
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="[Conceptual Background] Meta Learning (2) - Approaches">
-  <meta name="twitter:description" content="In the previous post, I briefly explained the context of how meta-learning emerged and the basic concept of few-shot learning to help understand meta-learning. So, in this post, I intend to explain meta-learning approaches. I plan to summarize what the pioneer papers are and what points each paper wants to make. However... since so many papers have been published since 2017, it is impossible to cover all of them, so I will organize the summary mainly around key papers and papers that I found interesting to read. And in the next post, I will take time to briefly review papers focused on advanced methods.">
+  <meta name="twitter:description" content="In the previous post, I briefly explained how Meta-Learning emerged and introduced the basic concept of Few-Shot Learning. In this post, I will explain the main Meta-Learning approaches. I plan to summarize the pioneering papers and the key ideas each paper presents. However... since so many papers have been published since 2017, it is impossible to cover all of them, so I will focus mainly on key papers and papers that I found interesting to read. In the next post, I will briefly review papers focused on more advanced methods.">
 ---
 
-<div>In the previous post, I briefly explained the context of how meta-learning emerged and the basic concept of few-shot learning to help understand meta-learning. So, in this post, I intend to explain meta-learning approaches. I plan to summarize what the pioneer papers are and what points each paper wants to make.
+<div>In the previous post, I briefly explained how Meta-Learning emerged and introduced the basic concept of Few-Shot Learning. In this post, I will explain the main Meta-Learning approaches. I plan to summarize the pioneering papers and the key ideas each paper presents.
 <br><br>
-  However... since so many papers have been published since 2017, it is impossible to cover all of them, so I will organize the summary mainly around key papers and papers that I found interesting to read. And in the next post, I will take time to briefly review papers focused on advanced methods.</div>
+  However... since so many papers have been published since 2017, it is impossible to cover all of them. So, I will focus mainly on key papers and papers that I found interesting to read. In the next post, I will briefly review papers focused on more advanced methods.</div>
 
 
 ## 2. Meta Learning Approaches
 
-Actually, the reason I explained few-shot learning in the previous post was to explain meta-learning. You can understand meta-learning as applying various approaches utilizing the concept of Few-shot learning. Without further ado, let's see what concepts exist in meta-learning.
+Actually, the reason I explained Few-Shot Learning in the previous post was to help explain Meta-Learning. You can understand Meta-Learning as applying various approaches based on the concept of Few-Shot Learning. Without further ado, let's see what approaches exist in Meta-Learning.
 
-Meta-learning can basically be classified into the following 3 broad categories:
+Meta-Learning can basically be classified into the following three broad categories:
 
 - Optimization-based Approach
 - Metric-based Approach
 - Model-based Approach
 
-I will explain the key approaches of important papers for each category. However, I will skip the model-based approach here. Since model-based approaches are usually used a lot in RL, I will post about them separately next time if I have the chance.
+I will explain the key approaches and important papers for each category. However, I will skip the model-based approach here. Since model-based approaches are often used in RL, I will post about them separately next time if I have the chance.
 
 > It would be good to check how $S$ and $Q$ are utilized for training while reading.
 
@@ -40,13 +40,13 @@ I will explain the key approaches of important papers for each category. However
 
 ### 2.1 Optimization-based Meta Learning
 
-Optimization-based meta-learning is a method of learning centered on gradients. Accordingly, the very first paper mentioned is [Model-Agnostic Meta-Learning (MAML)](https://arxiv.org/pdf/1703.03400.pdf), which came out in 2017. It is essentially the paper that popularized the concept of "Meta Learning". Then let's examine what kind of paper MAML is.
+Optimization-based Meta-Learning is a method centered on learning through gradients. The first paper to discuss here is [Model-Agnostic Meta-Learning (MAML)](https://arxiv.org/pdf/1703.03400.pdf), which was published in 2017. It is essentially the paper that popularized the concept of "Meta-Learning." So, let's examine what kind of paper MAML is.
 
 #### 2.1.1 MAML
 
-The final goal of MAML is to train the model parameter $\theta$ to a position where fast adaptation/finetuning (hereinafter FT) is possible. The keyword to notice here is "FT". The core mechanism of MAML is ultimately "It would be efficient if we can reach specific tasks through a few steps of parameter updates!". Let me explain with an example. If a person has a job that requires traveling all over the country (Korea), it would be more efficient to live in Daejeon (central region) than to live in Busan, Gangneung, or Incheon. Like this, moving $\theta$ to a position where it can quickly reach tasks is better for achieving good performance on various tasks than learning every task individually.
+The final goal of MAML is to train the model parameter $\theta$ to a position where fast adaptation or fine-tuning (hereinafter FT) is possible. The key idea is: "It would be efficient if we could reach specific tasks through only a few parameter updates!" Let me explain with an example. If a person has a job that requires traveling all over the country (Korea), it would be more efficient to live in Daejeon (the central region) than to live in Busan, Gangneung, or Incheon. Similarly, moving $\theta$ to a position from which it can quickly reach many tasks is better for achieving good performance across various tasks than learning every task individually.
 
-While the paragraph above explained it in words, let's look at it mathematically this time. Before diving in, MAML is divided into an inner-loop and an outer-loop to train one epoch. The inner-loop is the FT mentioned above, and the outer-loop is the model update$^*$. The MAML algorithm is as shown in <a href='#figure1'>Figure 1</a>.
+While the paragraph above explained the idea in words, let's look at it mathematically this time. Before diving in, MAML is divided into an inner-loop and an outer-loop during each training epoch. The inner-loop is the FT mentioned above, and the outer-loop is the model update$^*$. The MAML algorithm is shown in <a href='#figure1'>Figure 1</a>.
 
 $^*$ Usually, this process is also called bi-level optimization.
 
@@ -58,7 +58,7 @@ $^*$ Usually, this process is also called bi-level optimization.
   </figcaption>
 </center>
 
-And explaining the pseudo-code above in detail:
+Now, let's explain the pseudo-code above in detail:
 
 1. Initialize model parameter $\theta$ (line 1)
 2. Sample task $\mathcal{T}$ =($S$,$\mathcal{Q}$ ) ; $\mathcal{T} \sim p(\mathcal{T})$ along with the number of batches (line 3)
@@ -71,7 +71,7 @@ And explaining the pseudo-code above in detail:
 
 5. Repeat 2-4 (line 2-9)
 
-The part to keep an eye on here is the derivative (meta-gradient) during the outer loop. If you look, when performing the outer loop update, it differentiates not with $\phi$ but with $\theta$ for the loss value resulting from the fine-tuned parameter $\phi$ and $Q$. The related formula expands as follows by the chain rule.
+The important point here is the derivative (meta-gradient) during the outer loop. When performing the outer-loop update, we differentiate with respect to $\theta$, not $\phi$, even though the loss is calculated using the fine-tuned parameter $\phi$ and $Q$. The related formula can be expanded using the chain rule as follows.
 
 
 $$
@@ -84,7 +84,7 @@ $$
 \end{aligned}
 $$
 
-The purpose of this formula is ultimately to update $\theta$ towards a lower loss, but to update it in a direction that lowers the loss $\mathcal{L}(\mathcal{Q};\phi)$ at the FT'd $\phi$. This might feel ambiguous, but looking at <a href='#figure2'>Figure 2</a> might help you understand the direction of the update to some extent. (Reference: [Boyang Zhao's Blog](https://boyangzhao.github.io/posts/few_shot_learning), the notation is slightly different, but you can just view loss as loss.)
+The purpose of this formula is ultimately to update $\theta$ toward a lower loss, specifically in a direction that lowers the loss $\mathcal{L}(\mathcal{Q};\phi)$ at the fine-tuned $\phi$. This might feel ambiguous, but looking at <a href='#figure2'>Figure 2</a> may help you understand the direction of the update. (Reference: [Boyang Zhao's Blog](https://boyangzhao.github.io/posts/few_shot_learning). The notation is slightly different, but you can simply interpret it as the loss.)
 
 ![]({{ '/assets/img/23-12-24/maml_task.png' | relative_url }})|![]({{ '/assets/img/23-12-24/maml_task_multi.png' | relative_url }})
 
@@ -98,9 +98,9 @@ The purpose of this formula is ultimately to update $\theta$ towards a lower los
 
 #### 2.1.2 FOMAML, Reptile
 
-In the case of MAML, Hessian matrix multiplication ($=\nabla_\theta^2 \mathcal{L}(\mathcal{S};\phi)$) is included, so there is a penalty from a computational cost perspective. So, methods were proposed to reduce computational cost while maintaining performance to some extent.
+In MAML, Hessian matrix multiplication ($=\nabla_\theta^2 \mathcal{L}(\mathcal{S};\phi)$) is included, which creates a computational cost. Therefore, methods were proposed to reduce the cost while maintaining performance to some extent.
 
-One of them is FOMAML (First-Order MAML). FOMAML was experimentally verified in the MAML paper, showing that it maintains performance to some extent even if training proceeds while ignoring the Hessian matrix. In other words, it assumes $\nabla_\theta^2 \mathcal{L}(\mathcal{S};\phi) = 0$. This is well shown in <a href='#figure3'>Figure 3</a>; it applies the "direction of the gradient" that lowers the loss $\mathcal{L}(\mathcal{Q};\phi)$ at the finetuned $\phi$ to $\theta$. The paper explains that this mechanism is possible because the Hessian value converges to 0 while passing through ReLU. Thinking from a Loss landscape perspective, the "direction lowering the loss" is similar. That is, it implicitly contains the assumption that the final updated $\theta$ position in MAML and the $\theta$ position in FOMAML are in a similar loss landscape.
+One of them is FOMAML (First-Order MAML). The MAML paper experimentally showed that FOMAML maintains performance to some extent even when training proceeds while ignoring the Hessian matrix. In other words, it assumes $\nabla_\theta^2 \mathcal{L}(\mathcal{S};\phi) = 0$. This is illustrated in <a href='#figure3'>Figure 3</a>: it applies to $\theta$ the "direction of the gradient" that lowers the loss $\mathcal{L}(\mathcal{Q};\phi)$ at the fine-tuned $\phi$. The paper explains that this mechanism is possible because the Hessian value converges to 0 when passing through ReLU. From a Loss Landscape perspective, the "direction that lowers the loss" is similar. In other words, it implicitly assumes that the final updated $\theta$ position in MAML and the $\theta$ position in FOMAML lie in similar loss landscapes.
 
 
 
@@ -112,7 +112,7 @@ One of them is FOMAML (First-Order MAML). FOMAML was experimentally verified in 
   </figcaption>
   <br>
 </center>
-Next is the [Reptile](https://arxiv.org/pdf/1803.02999.pdf) paper. The Reptile paper was published by OpenAI in 2018, and you can think of it as a variant of FOMAML. The characteristic of Reptile is that $S$ and $Q$ do not exist separately. It trains in few-shot, but it picks multiple tasks and trains the tasks selected through sampling. Then, it proceeds with the update using the difference between the initial model parameter $\theta$ and the fine-tuned model parameter $\phi$ as the gradient. <a href="#figure4">Figure 4</a> below is a picture of the Reptile algorithm and the update direction.
+Next is the [Reptile](https://arxiv.org/pdf/1803.02999.pdf) paper. The Reptile paper was published by OpenAI in 2018, and you can think of it as a variant of FOMAML. The characteristic of Reptile is that $S$ and $Q$ do not exist separately. It uses a few-shot setting, but samples multiple tasks and trains on the selected tasks. It then updates the model using the difference between the initial model parameter $\theta$ and the fine-tuned model parameter $\phi$ as the gradient. <a href="#figure4">Figure 4</a> below shows the Reptile algorithm and its update direction.
 
 <img src="{{ '/assets/img/23-12-24/reptile.png' | relative_url }}">|<img src="{{ '/assets/img/23-12-24/reptile_task.png' | relative_url }}" style="zoom:140%;">
 
@@ -126,7 +126,7 @@ Next is the [Reptile](https://arxiv.org/pdf/1803.02999.pdf) paper. The Reptile p
 
 
 
-It might be confusing because the notation is different from the existing MAML paper, but explaining the process in detail is as follows:
+The notation may be different from the original MAML paper, which can be confusing, so the process is explained in detail below:
 
 1. Initialize model parameter $\theta$ 
 2. Pick $N$ Tasks $\mathcal{T}_i$. (where $\mathcal{T}_i \sim p(\mathcal{T})$, batch = $N$)
@@ -134,19 +134,19 @@ It might be confusing because the notation is different from the existing MAML p
 4. Outer Loop: Update $\theta$ by the difference between $\theta$ and $\phi$: $\theta \leftarrow \theta + \frac{\beta}{N}\sum_{i=1}^N (\phi_i - \theta)$
 5. repeat 2-4
 
-When trained like this, ultimately the expectation value of the meta-gradient in the Reptile algorithm converges similarly to the meta-gradient of MAML. Most of the Reptile paper is content proving mathematically how it converges similarly to MAML and FOMAML. However, here we will only look briefly at the big context. I will also make a post related to proofs if I have the chance someday.
+When trained this way, the expected meta-gradient in the Reptile algorithm ultimately converges to something similar to the meta-gradient of MAML. Most of the Reptile paper is devoted to mathematically proving why it converges similarly to MAML and FOMAML. However, here we will only look at the broad idea. I will also make a post related to the proofs if I have the chance someday.
 
 #### 2.1.3 Wrap-up
 
-Optimization-based Meta Learning is a meta-learning approach on how to utilize gradients for training when doing few-shot learning. Unlike other approaches, it has the advantage that if the gradient is set appropriately, it can be applied model-agnostically to various fields. In other words, it can be utilized in various fields such as Regression, classification, reinforcement learning, etc.
+Optimization-based Meta-Learning is an approach that uses gradients for training in a few-shot setting. Unlike other approaches, it has the advantage that, when the gradient-based update is designed appropriately, it can be applied in a model-agnostic way across various fields. In other words, it can be used in fields such as regression, classification, and reinforcement learning.
 
 ### 2.2 Metric-based Meta Learning
 
-Metric-based meta-learning is literally a concept of training by calculating similarity based on distance. Simply put, there is semantic information that each class possesses, and training proceeds through the similarity between that semantic information. In a way, it can be seen as similar to the concept of nearest neighbors like $k$-NN. Representative examples include Matching Network, Prototypical Network, and Relation Network, and we will examine the main concepts discussed in each paper. (It would be good to keep the concept of Few-shot in mind.)
+Metric-based Meta-Learning is an approach that trains by calculating similarity based on distance. Simply put, each class has semantic information, and training proceeds by measuring the similarity between those representations. In a way, it is similar to the nearest-neighbor concept used in $k$-NN. Representative examples include Matching Network, Prototypical Network, and Relation Network, and we will examine the main concepts discussed in each paper. (It would be good to keep the concept of Few-Shot Learning in mind.)
 
 #### 2.2.1 Matching Network
 
-The first paper to look at is [Matching Network](https://arxiv.org/pdf/1606.04080.pdf). It is a pioneer paper in the metric-based approach. Thinking about the situation at that time, the seq2seq paper, which became the basis of the Transformer, had emerged. It is about training through the overall context, not just looking at extracted features through the Attention mechanism. Therefore, this paper intends to compare the context between features produced through an encoder.
+The first paper to look at is [Matching Network](https://arxiv.org/pdf/1606.04080.pdf), a pioneering paper in the metric-based approach. Thinking about the context at that time, the seq2seq paper, which later became one of the foundations of the Transformer, had emerged. It focused on learning from the overall context rather than looking only at extracted features through the Attention mechanism. Therefore, the Matching Network paper aimed to compare the context between features produced by an encoder.
 
 <center>
   <img src="{{ '/assets/img/23-12-24/matching.png' | relative_url }}" width="60%" height="60%">
@@ -163,7 +163,7 @@ C_{\mathcal{S}}(\hat{\textbf{x}}) = P(y|\hat{\textbf{x}}, S) = \sum_{i=1}^k a(\h
 $$
 
 
-The formula above implies utilizing the attention mechanism by giving it more weight. Here, $a(\cdot, \cdot)$ is the attention kernel, which takes a softmax on cosine similarity:
+The formula above shows that the attention mechanism is used to assign different weights to the support samples. Here, $a(\cdot, \cdot)$ is the attention kernel, which applies a softmax to the cosine similarity:
 
 
 $$
@@ -171,16 +171,16 @@ a(\hat{x},x) =\frac{\exp(cos(f(\hat{x}), g(x)))}{\sum_{j=1}^k \exp(cos(f(\hat{x}
 $$
 
 
-Interpreting the meaning above simply, it means calculating the similarity through the attention kernel for each support sample $\textbf{x}_i $ and input $\textbf{x}$, and then using this as a weight to predict towards the side with higher similarity when comparing. Here, you can understand input $\textbf{x}$ as a query sample.
+In simple terms, we calculate the similarity between each support sample $\textbf{x}_i $ and the input $\textbf{x}$ using the attention kernel. We then use the similarity as a weight, so the prediction is biased toward the class with higher similarity. Here, you can understand the input $\textbf{x}$ as a query sample.
 
-Then let's look at the training process with notation.
+Now, let's look at the training process using the notation below.
 
 1. Extract feature representation vector of support set through $g_\theta$
 2. Extract feature representation vector of query set through $f_\theta$ (Usually $f_\theta = g_\theta$)
 3. Calculate attention value between feature representation vectors from 1 and 2 $\rightarrow  a(\cdot, \cdot)$
 4. Predict label of query set through $C_\mathcal{S}$
 
-Unlike recent papers, early papers related to meta-learning utilized LSTM structures to solve the few-shot setting from a context perspective. So, this paper also proposed a method utilizing the LSTM structure additionally. ($\rightarrow$ Full Context Embeddings; FCE) Let's see the FCE training process along with notation on how the LSTM model architecture is utilized.
+Unlike more recent papers, early Meta-Learning papers often used LSTM structures to handle the few-shot setting from a contextual perspective. Therefore, this paper also proposed an additional method using an LSTM structure ($\rightarrow$ Full Context Embeddings; FCE). Let's look at the FCE training process and how the LSTM architecture is used.
 
 - Embedding $g$
   - $g \rightarrow $ bidirectional LSTM, $g' \rightarrow$ CNN (feature extractor) 
@@ -196,15 +196,15 @@ $\Rightarrow$ According to $k$ step...
 3. $r\_{k-1} = \sum\_{i=1}^{\|\mathcal{S}\|}a(h\_{k-1}, g(x\_i))g(x\_i)$
 4. $a(h\_{k-1}, g(x\_i)) = \text{softmax}(h^\text{T}\_{k-1}g(x_i))$
 
-Ultimately, the reason for using LSTM here is to better view the context of each feature vector. In easy tasks like Omniglot, there is not much performance gain, but in slightly more difficult tasks like $mini$-ImageNet, there is performance gain.
+Ultimately, the reason for using an LSTM here is to better capture the context of each feature vector. On easier tasks like Omniglot, there is not much performance gain, but on slightly more difficult tasks like $mini$-ImageNet, there is a performance gain.
 
 
 
 #### 2.2.2 Prototypical Networks
 
-The next paper is [Prototypical Networks](https://arxiv.org/pdf/1703.05175.pdf) (hereinafter ProtoNet). In fact, you can consider most metric-based meta-learning research as based on ProtoNet rather than Matching Network.
+The next paper is [Prototypical Networks](https://arxiv.org/pdf/1703.05175.pdf) (hereinafter ProtoNet). In fact, you can think of much of the later metric-based Meta-Learning research as being based on ProtoNet rather than Matching Network.
 
-I'll get straight to the point. ProtoNet proceeds with training through Euclidean distance calculation between the prototype vector of each label and feature vectors. Looking at <a href="#figure6">Figure 6</a> below, $c_n$s represent the prototype of each label. So, for a new task, it calculates the distance with each prototype and maps it to the prototype label with the minimum distance. At this time, the prototype is obtained by the average of feature vectors derived from the support set. Then, let's look at it in more detail through the following training process.
+I'll get straight to the point. ProtoNet trains by calculating the Euclidean distance between the prototype vector of each label and the feature vectors. Looking at <a href="#figure6">Figure 6</a> below, $c_n$s represent the prototype of each label. For a new task, the model calculates the distance to each prototype and assigns the sample to the label of the closest prototype. The prototype is obtained by averaging the feature vectors derived from the Support set. Now, let's look at the training process in more detail.
 
 - Notation (I will explain as similarly to the paper as possible):
   - Support Set $\mathcal{S}\_{n}= \\{ (x\_{n,j}^s, y\_{n,j}^s) \\}\_{j=1}^{K}$,  Query Set $\mathcal{Q}\_{n}= \\{ (x\_{n,j}^q, y\_{n,j}^q) \\}\_{j=1}^{Q}$​ 
@@ -221,14 +221,14 @@ I'll get straight to the point. ProtoNet proceeds with training through Euclidea
 
 
 
-Since there is quite a lot of notation and it's complex, I think it might be difficult to understand. If the process is a bit complicated, it would be good to understand it simply as follows:
+Since there is quite a lot of notation and it is complex, the process may be difficult to understand at first. If it feels complicated, it may be helpful to think of it simply as follows:
 
 
 
-- Make a label called prototype with Support Set
-- Compare distance between prototypes with Query Set $\Rightarrow$ Logits (Final output)
-- Calculate CE between Query Set Label and Logits
-- Update parameter with CE
+- Create a prototype for each label using the Support Set.
+- Compare the Query Set with the prototypes $\Rightarrow$ Logits (final output).
+- Calculate the CE between the Query Set labels and the logits.
+- Update the parameters using the CE loss.
 
 
 
@@ -241,7 +241,7 @@ Since there is quite a lot of notation and it's complex, I think it might be dif
 
 
 
-This paper does not use a linear layer. Since feature vectors are directly used to find distance anyway, it is not used despite being a classification task. However, this paper explains that Euclidean distance can be reinterpreted like a linear model. I will explain while looking at the following two formulas.
+This paper does not use a linear layer. Since the feature vectors are directly used to calculate distances, a separate linear layer is not used even though this is a classification task. However, the paper explains that Euclidean distance can be reinterpreted as a linear model. I will explain this using the following two formulas.
 
 
 $$
@@ -254,9 +254,9 @@ $$
 
 
 
-Actually, the reason why ProtoNet chose Euclidean distance over other distance metrics is here. The basic concept of Deep Learning is that if the backbone network performs feature representation smoothly, the rest only requires linear transformation suitable for the situation (especially classification tasks). Usually, in deep learning, this process is trained by attaching a learnable linear layer behind the backbone network. However, ProtoNet interprets that **<mark>proceeding with training via Euclidean distance implies this linear transformation process</mark>**. Also, another reason why it can be assumed that Euclidean distance is appropriate is that they claim parts requiring non-linearity during training have already been learned through the backbone network. Actually, this assumption is about the structure we take for granted: backbone model - linear layer. It seems mentioned in the paper since deep learning research was not as abundant at that time.
+This is the reason why ProtoNet chose Euclidean distance over other distance metrics. The basic idea in Deep Learning is that, if the backbone network learns a good feature representation, the remaining step only requires a suitable linear transformation, especially for classification tasks. Usually, this is implemented by attaching a learnable linear layer behind the backbone network. However, ProtoNet interprets **<mark>training through Euclidean distance as an implicit linear transformation</mark>**. Another reason Euclidean distance may be appropriate is that the parts requiring non-linearity are assumed to have already been learned by the backbone network. In fact, this assumption comes from a familiar structure: backbone model → linear layer. The paper seems to mention this because deep learning research was not as extensive at that time.
 
-(Really lastly...) Another advantage when reinterpreted like this is that MAML (hereinafter Proto-MAML) can be applied to ProtoNet. Since $w_k^{\text{T}}f_\theta(x) +b_k$ acts as a linear layer, FT becomes possible. I will (briefly) explain the Proto-MAML training process.
+(Really lastly...) Another advantage of this reinterpretation is that MAML (hereinafter Proto-MAML) can be applied to ProtoNet. Since $w_k^{\text{T}}f_\theta(x) +b_k$ acts as a linear layer, FT becomes possible. I will briefly explain the Proto-MAML training process.
 
 - Notation:
   - $f_\theta$: backbone network
@@ -270,12 +270,12 @@ Actually, the reason why ProtoNet chose Euclidean distance over other distance m
 
 
 
-Actually, there is a paper that proposed [(fo-)Proto-MAML](https://arxiv.org/pdf/1903.03096.pdf). If you read it, although it is not the very main concept in the paper, it showed that Proto-MAML has performance gain.
+There is also a paper that proposed [(fo-)Proto-MAML](https://arxiv.org/pdf/1903.03096.pdf). Although it is not the main focus of the paper, the authors showed that Proto-MAML provides a performance gain.
 
 
 
 ### *Conclusion
 
-Up to this post, I think I have covered almost all pioneer papers of meta-learning. Research on meta-learning exploded for about 4-5 years after 2016 and 2017 when the papers explained above appeared, and although it has decreased slightly now, it is still consistently published in top-conference papers. However, the trend has now changed from researching the meta-learning algorithm itself to applying it to other research. Especially, as foundation model research becomes extremely active, the concept of few-shot, which can train with a small amount of data, seems to have become more important.
+Up to this post, I think I have covered most of the pioneering papers in Meta-Learning. Research on Meta-Learning grew rapidly for about 4–5 years after the papers mentioned above appeared in 2016 and 2017. Although the pace has slowed slightly, research in this area is still consistently published at top conferences. However, the trend has changed from studying Meta-Learning algorithms themselves to applying them to other research areas. In particular, as foundation-model research becomes increasingly active, the concept of Few-Shot Learning, which allows models to learn from a small amount of data, seems to have become even more important.
 
-As the next topic, I am thinking of posting about foundation models (LLM, LVM, etc.) that I have just started, whether it be paper reviews or concepts. I'm not sure which specific direction to take yet, but I will return after studying to some extent. Thank you for reading.
+For the next topic, I am thinking about posting either paper reviews or conceptual articles on foundation models (LLM, LVM, etc.), which I have only recently started studying. I am not sure which specific direction to take yet, but I will return after studying them a bit more. Thank you for reading.

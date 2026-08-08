@@ -3,7 +3,7 @@ layout: distill
 title: "[Theoretical Background] Convex Optimization 1"
 date: 2024-07-14 00:00:00 +0000
 description: >
-  This year, I took a class involving the concept of Optimization for the first time. In dealing with the Deep Learning field, it was accepted like a foundational discipline to mathematically verify whether convergence happens, and if so, how fast it happens. While the Meta Learning and Generative Models I posted previously, and the Foundation Models I announced I would post in the future, are good, I thought it would also be good to upload concepts based on mathematics. So, I plan to try posting mainly about the content I learned during my graduate school classes. Since I have organized what I learned regarding these contents, I plan to post them periodically without making excuses. 
+  This year, I took a class on Optimization for the first time. In the Deep Learning field, Optimization is a foundational discipline for mathematically verifying whether convergence occurs and, if so, how quickly it occurs. Although I have previously posted about Meta-Learning and Generative Models, and announced that I would post about Foundation Models in the future, I also thought it would be good to share some concepts based on mathematics. So, I plan to post mainly about what I have learned in my graduate school classes. Since I have organized these materials, I plan to post them periodically without making excuses.
 authors:
   - name: Jae-Jun Lee
     affiliations:
@@ -16,44 +16,44 @@ mathjax: true
 _meta: >
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="[Theoretical Background] Convex Optimization 1">
-  <meta name="twitter:description" content="This year, I took a class involving the concept of Optimization for the first time. In dealing with the Deep Learning field, it was accepted like a foundational discipline to mathematically verify whether convergence happens, and if so, how fast it happens. While the Meta Learning and Generative Models I posted previously, and the Foundation Models I announced I would post in the future, are good, I thought it would also be good to upload concepts based on mathematics. So, I plan to try posting mainly about the content I learned during my graduate school classes. Since I have organized what I learned regarding these contents, I plan to post them periodically without making excuses.">
+  <meta name="twitter:description" content="This year, I took a class on Optimization for the first time. In the Deep Learning field, Optimization is a foundational discipline for mathematically verifying whether convergence occurs and, if so, how quickly it occurs. Although I have previously posted about Meta-Learning and Generative Models, and announced that I would post about Foundation Models in the future, I also thought it would be good to share some concepts based on mathematics. So, I plan to post mainly about what I have learned in my graduate school classes. Since I have organized these materials, I plan to post them periodically without making excuses.">
 ---
 
-$\star$ First, before explaining, I will omit what convex/non-convex is, and the overall formulas within deep learning. They are explained so well in other blogs, so is there a need? However, here I will try to focus more on "Why?", or "How?". Especially, I will try to focus more on the formula derivation.
+$\star$ First, before explaining, I will skip the basics of convex and non-convex functions, as well as the general formulas used in deep learning. They are explained so well in other blogs, so is there a need to repeat them? Instead, I will focus more on "Why?" and "How?" In particular, I will focus on the formula derivations.
 
 ## Why Convex Optimization?
 
-Most problems we actually have to solve are in non-convex forms. However, solving such non-convex functions requires more precise approximation and proof. In this case, the cost becomes too large and it can be inefficient. But if we solve it assuming that the corresponding function is <mark style="background: orange">convex</mark> within the range we can assume, we can solve it efficiently. In other words, if we assume an arbitrary function $f$ is <mark style="background: orange">convex</mark>, since the local minima for $f$ is the global minima, the task to solve becomes relatively very easy because we only need to find the local minima. Then let's take a look through simple examples. 
+Most problems we actually need to solve are non-convex. However, solving non-convex functions requires more careful approximation and proof, which can make the process expensive and inefficient. If we instead assume that the function is <mark style="background: orange">convex</mark> within a reasonable range, we can solve it more efficiently. In other words, if we assume that an arbitrary function $f$ is <mark style="background: orange">convex</mark>, the local minimum of $f$ is also the global minimum. The problem becomes relatively easy because we only need to find a local minimum. Let's look at this through some simple examples.
 
-*The **Taxonomy** below represents the classification criteria during optimization.* **$\star$ Taxonomy:**
+*The **Taxonomy** below represents the classification criteria used in optimization.* **$\star$ Taxonomy:**
 
-- <mark style="background-color:rgba(255,25,0,0.4); color:black!important">Zeroth Order</mark>: Only value of Function
-- <mark style="background-color:rgba(255,25,0,0.4); color:black!important">$1^{st}$ Order</mark>: Derivation (GD/ SGD/ mini-batch GD, etc.)
-- <mark style="background-color:rgba(255,25,0,0.4); color:black!important">$2^{nd}$ Order</mark>: Hessians (Newton Methods, etc.)
+- <mark style="background-color:rgba(255,25,0,0.4); color:black!important">Zeroth Order</mark>: Only the function value
+- <mark style="background-color:rgba(255,25,0,0.4); color:black!important">$1^{st}$ Order</mark>: Derivatives (GD/SGD/mini-batch GD, etc.)
+- <mark style="background-color:rgba(255,25,0,0.4); color:black!important">$2^{nd}$ Order</mark>: Hessians (Newton methods, etc.)
 
 <br>
 
 ## Example: Gradient Descent 
 
-One of the most basic methods to find the optimal solution in the Deep Learning field is Gradient Descent (hereinafter, GD). Actually, nowadays most people use other optimization techniques (e.g., SGD, Adam, etc.) instead of GD, but if you understand how GD converges from an optimization perspective, I think you will be able to understand the other techniques sequentially.
+One of the most basic methods for finding an optimal solution in the Deep Learning field is Gradient Descent (hereinafter, GD). Nowadays, most people use other optimization techniques (e.g., SGD, Adam, etc.) instead of plain GD. However, if you understand how GD converges from an optimization perspective, I think you will be able to understand the other techniques more easily as well.
 
-Then, let's look at how optimization is performed for GD, and how the convergence form of optimization changes according to assumptions. (All assumptions here are based on convex)
+Then, let's look at how optimization is performed with GD and how the convergence behavior changes according to the assumptions. (All assumptions here are based on convexity.)
 
 ## Problem Formulation 1 <br>(Assumption: $L$-Lipschitz)
 
-Before we dive in, optimization settings are usually established briefly as follows:
+Before we dive in, let us briefly establish the optimization setting:
 
 $$\min\limits_{x \in \mathbb{R}^d} f(x)$$ 
 
-where $f$ is differentiable convex function.
+where $f$ is a differentiable convex function.
 
-And since GD is, as everyone knows, an iterative algorithm, it can be written as follows:
+Since GD is an iterative algorithm, it can be written as follows:
 
 $$x_{k+1} = x_k -\gamma \nabla f(x_k)$$
 
-​ where $\gamma > 0 $ is the step size, a.k.a learning rate
+​ where $\gamma > 0 $ is the step size, also known as the learning rate.
 
-Then, to find the optimal solution, we will repeat the above content continuously. Assuming that training proceeds without diverging, a good optimization algorithm is a battle of how fast it finds the optimal solution. If asked "How do we find this?", we can find it through upper bound settings for the final step $T$. In other words, when training has finally proceeded: 
+To find the optimal solution, we repeatedly apply the update above. Assuming that training does not diverge, the quality of an optimization algorithm depends on how quickly it finds the optimal solution. So, how do we measure this? We can use an upper bound based on the final step $T$. In other words, after training has proceeded for $T$ steps:
 
 <mark style="background:skyblue" >Theorem 1:</mark> Let $f$ be convex and $L$-Lipschitz continuous. Then gradient descent with $\gamma = \frac{\mid\mid x_1 - x^\star\mid\mid}{L\sqrt{T}}$  satisfies:
 
@@ -62,10 +62,10 @@ $$f \left ( \frac{1}{T} \sum_{k=1}^T x_k  \right) - f(x^{\star}) \leq \frac{|| x
 
 ### Proof:
 
-First, to solve the problem, we can use a method of projecting onto convex sets. 
-In other words, when projecting onto convex sets, the inner product of $x$ and $z$ with respect to the projection position $\pi_c (z)$ always results in a negative number (obtuse angle), and if we utilize the Pythagorean theorem, the inequality $\mid\mid \pi_c (z)  - x\mid\mid \leq \mid\mid z - x \mid\mid$ holds true.  Also, later during the proof derivation, I plan to utilize the Pythagorean theorem as follows: $\mathbf{\left<a,b\right> = \frac{1}{2}(\mid\mid a\mid\mid^2 + \mid\mid b\mid\mid ^2 -\mid\mid a-b\mid\mid ^2)}$)
+First, to solve the problem, we can use a method based on projection onto convex sets.
+In other words, when projecting onto a convex set, the inner product involving $x$, $z$, and the projection point $\pi_c (z)$ always results in a non-positive value (an obtuse angle), and the Pythagorean theorem gives the inequality $\mid\mid \pi_c (z)  - x\mid\mid \leq \mid\mid z - x \mid\mid$. Later in the proof, I will also use the following form of the Pythagorean theorem: $\mathbf{\left<a,b\right> = \frac{1}{2}(\mid\mid a\mid\mid^2 + \mid\mid b\mid\mid ^2 -\mid\mid a-b\mid\mid ^2)}$)
 
-Then, using the properties above, let's develop the proof: 
+Using the properties above, let's develop the proof:
 
 
 
@@ -81,7 +81,7 @@ $$
 
 
 
-Here, the $L$-Lipschitz Continuity property: if $f$ is differentiable, then $\mid \nabla f (x) \mid \leq L$. $\rightarrow$ Using $\frac{\gamma}{2} \mid\mid \nabla f(x_k)\mid\mid ^2 \leq \frac{\gamma L^2}{2}$, we can set the bound as follows.
+Here, the $L$-Lipschitz continuity property tells us that if $f$ is differentiable, then $\mid \nabla f (x) \mid \leq L$. Using $\frac{\gamma}{2} \mid\mid \nabla f(x_k)\mid\mid ^2 \leq \frac{\gamma L^2}{2}$, we can set the following bound.
 
 $$
 \begin{align}
@@ -90,7 +90,7 @@ $$
 $$
 
 
-Now, let's substitute the $k$ values sequentially and expand the formula.
+Now, let's substitute the values of $k$ sequentially and expand the formula.
 
 
 $$
@@ -105,7 +105,7 @@ f(x_k) - f(x^\star) &\leq \frac{1}{2\gamma} \bigg [ \; \mid\mid x_k - x^\star\mi
 $$
 
 
-If we take the average for both hand sides of the Inequality:
+If we take the average of both sides of the inequality:
 
 
 $$
@@ -113,15 +113,15 @@ $$
 $$
 
 
-Here, since $\mid\mid  x_{T+1} - x^\star\mid\mid ^2$ has a $-$ attached in front, this term is always negative. Therefore, we can just eliminate it and set an additional upper bound. 
+Here, since $\mid\mid  x_{T+1} - x^\star\mid\mid ^2$ has a minus sign in front of it, this term is always non-positive. Therefore, we can drop it and obtain an additional upper bound.
 
 $$\Rightarrow \frac{1}{T*2\gamma} \left[ || x_1 - x^\star || ^2 - || x_{T+1} - x^\star || ^2 \right] \leq \frac{1}{T*2\gamma} \cdot || x_1 - x^\star || ^2$$
 
- And then, *utilizing Jensen's Inequality, we can express it as $f(\frac{1}{T} \sum_{k=1}^Tx_k) \leq \frac{1}{T} \sum_{k=1}^Tf(x_k)$. (Since we already assumed $f$ is <mark style="background: orange">convex</mark>)
+And then, *using Jensen's Inequality, we can write $f(\frac{1}{T} \sum_{k=1}^Tx_k) \leq \frac{1}{T} \sum_{k=1}^Tf(x_k)$. (This follows from our assumption that $f$ is <mark style="background: orange">convex</mark>.)
 
-*Jensen's Inequality: If $f$ is <mark style="background: orange">convex</mark>, it satisfies $f(\mathbb{E}[x])\leq \mathbb{E}[f(x)]$.
+*Jensen's Inequality: If $f$ is <mark style="background: orange">convex</mark>, then it satisfies $f(\mathbb{E}[x])\leq \mathbb{E}[f(x)]$.
 
-Expanding the formula according to this gives:
+Substituting this into the bound gives:
 
 
 $$
@@ -132,7 +132,7 @@ f(\frac{1}{T} \sum_{k=1}^Tx_k) - f(x^\star) &\leq \frac{1}{T} \sum_{k=1}^Tf(x_k)
 $$
 
 
-Finally, if we substitute the step size $\gamma = \frac{\mid\mid x_1 - x^\star\mid\mid}{L\sqrt{T}}$
+Finally, if we substitute the step size $\gamma = \frac{\mid\mid x_1 - x^\star\mid\mid}{L\sqrt{T}}$,
 
 
 $$
@@ -145,22 +145,22 @@ f(\frac{1}{T} \sum_{k=1}^Tx_k) - f(x^\star) &\leq \frac{|| x_1 - x^\star|| ^2}{2
 $$
 
 
-When expanded like this, we can see it comes out identical to <mark style="background:skyblue" >Theorem </mark>. This means that the convergence rate varies according to $T$, and assuming $f$ is convex and $L$-Lipschitz, that speed converges to $\mathcal{O}\left(\frac{1}{\sqrt{T}}\right)$.
+After expanding the expression, we obtain exactly the result in <mark style="background:skyblue" >Theorem </mark>. This means that the convergence rate depends on $T$. Assuming that $f$ is convex and $L$-Lipschitz, the convergence rate is $\mathcal{O}\left(\frac{1}{\sqrt{T}}\right)$.
 
 ### Side Note: Fixed Step Size vs. Adaptive Step Size
 
-If you look at other textbooks, papers, blogs, etc., when proving Gradient Descent, they often set a fixed step size $\gamma = \frac{1}{L}$ and derive it. Actually, when done this way, it is quite neat mathematically and the convergence rate is also faster at $\mathcal{O}(\frac{1}{T})$. However, when proceeding like this, because you have to set a constant value, and when expanding the formula, if it is a fixed step size, an independent term regarding $\frac{1}{T}$ is created in the bound RHS, so you cannot guarantee it really goes to the minimum. Therefore, you can understand the method I developed as giving up the convergence rate to set a step size dependent on the difference between the actual first input $x_1$ and optimal $x^\star$ and the number of iterations $T$, to make a slightly more adaptive step size. 
+If you look at other textbooks, papers, and blogs, you will often see a fixed step size $\gamma = \frac{1}{L}$ used when proving the convergence of Gradient Descent. This approach is mathematically neat, and the convergence rate is also faster at $\mathcal{O}(\frac{1}{T})$. However, because the step size is fixed, expanding the formula creates a term in the right-hand-side bound that is independent of $\frac{1}{T}$. Therefore, we cannot guarantee that the bound actually approaches the minimum. You can understand the method developed here as giving up some convergence speed in exchange for a more adaptive step size, which depends on the difference between the initial input $x_1$, the optimum $x^\star$, and the number of iterations $T$.
 
-**(Since the proof for Fixed Step Size is available so widely, I will omit it)**
+**(Since proofs for the fixed-step-size case are widely available, I will omit them.)**
 
 ## Afterwards...
 
-The derivation above is a formula developed assuming $f$ is convex and $L$-Lipchitz continuous. If the assumption becomes stronger ($\beta$-smooth, $\alpha$-strongly convex, etc.), the convergence rate changes. Future postings will proceed by proving the convergence rate according to assumptions.
+The derivation above was developed under the assumption that $f$ is convex and $L$-Lipschitz continuous. If the assumptions become stronger ($\beta$-smooth, $\alpha$-strongly convex, etc.), the convergence rate changes. In future posts, I will derive the convergence rate under different assumptions.
 
-I will finish by introducing the convergence rate table according to assumptions for GD.
+I will finish by introducing a convergence-rate table for GD under different assumptions.
 
 <img src="{{ '/assets/img/24-07-24/convex_2.png' | relative_url }}" style="zoom:50%;" />
 
 <br>
 
-**$\*\$Thank you very much for reading. If there are any incorrect parts while reading or if you have any advice, I would appreciate it if you could share your opinions anytime.**​
+**$\*\$Thank you very much for reading. If you find any incorrect parts or have any advice, I would appreciate it if you shared your thoughts anytime.**​
